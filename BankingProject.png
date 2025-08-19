@@ -5,7 +5,7 @@ import java.util.InputMismatchException;
 public class BankingApp {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        // Hardcoded accounts
+        
         BankAccount acc1 = new BankAccount("12345", "pass123", 10000);
         BankAccount acc2 = new BankAccount("67890", "pass456", 5000);
         System.out.print("Enter Account No: ");
@@ -13,7 +13,7 @@ public class BankingApp {
         System.out.print("Enter Password: ");
         String pwd = sc.next();
         BankAccount currentUser = null;
-        // Check credentials
+        
         if (acc1.verifyCredentials(accNo, pwd)) {
             currentUser = acc1;
         } else if (acc2.verifyCredentials(accNo, pwd)) {
@@ -66,7 +66,7 @@ public class BankingApp {
                         }
                         System.out.print("Enter transfer amount: ");
                         double transferAmt = sc.nextDouble();
-                        // Generate OTP
+                        
                         int otp = 1000 + new Random().nextInt(9000);
                         System.out.println("Generated OTP: " + otp);
                         System.out.print("Enter OTP to confirm transfer: ");
@@ -91,3 +91,4 @@ public class BankingApp {
         sc.close();
     }
 }
+
