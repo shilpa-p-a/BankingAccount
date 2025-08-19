@@ -1,13 +1,2 @@
-package com.july29;
 
-public class Bankingproject {
 
-	public static void main(String[] args) {
-		        Bankaccount user = new Bankaccount();
-		        user.createaccount();
-
-		        if (user.login()) {
-		            user.showMenu();
-		        }
-		    }
-		}
