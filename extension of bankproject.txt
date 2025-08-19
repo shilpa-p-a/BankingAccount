@@ -1,13 +1,54 @@
-package com.july29;
+package com.july19;
 
-public class Bankingproject {
+public class BankAccount {
 
-	public static void main(String[] args) {
-		        Bankaccount user = new Bankaccount();
-		        user.createaccount();
+	    private String accountNo;
+	    private String password;
+	    private double balance;
 
-		        if (user.login()) {
-		            user.showMenu();
-		        }
-		    }
-		}
+	    public BankAccount(String accountNo, String password, double balance) {
+	        this.accountNo = accountNo;
+	        this.password = password;
+	        this.balance = balance;
+	    }
+
+	    public String getAccountNo() {
+	        return accountNo;
+	    }
+
+	    public boolean verifyCredentials(String accNo, String pwd) {
+	        return this.accountNo.equals(accNo) && this.password.equals(pwd);
+	    }
+
+	    public void deposit(double amount) {
+	        balance += amount;
+	        System.out.println("Deposit successful! New Balance: " + balance);
+	    }
+
+	    public void withdraw(double amount) {
+	        if (amount <= balance) {
+	            balance -= amount;
+	            System.out.println("Withdrawal successful! New Balance: " + balance);
+	        } else {
+	            System.out.println("Insufficient balance!");
+	        }
+	    }
+
+	    public void transfer(BankAccount receiver, double amount, int otp, int userOtp) {
+	        if (amount <= balance) {
+	            if (otp == userOtp) {
+	                balance -= amount;
+	                receiver.balance += amount;
+	                System.out.println("Transfer successful! Your New Balance: " + balance);
+	            } else {
+	                System.out.println("OTP verification failed. Transfer cancelled!");
+	            }
+	        } else {
+	            System.out.println("Insufficient balance! Transfer failed.");
+	        }
+	    }
+
+	    public double getBalance() {
+	        return balance;
+	    }
+	}
