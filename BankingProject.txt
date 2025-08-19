@@ -1,94 +1,94 @@
-package com.july29;
-import java.util.Scanner;
+
+package com.july19;
 import java.util.Random;
-class Bankaccount {
-		private String accountNo;
-	    private String password;
-	    private double balance;
-	    private Scanner scanner;
-	    private Random random;
-	    public Bankaccount() {
-	        random = new Random();
-	        scanner=new Scanner(System.in);
-	    }
-	    public void createaccount() {
-	        System.out.println("===== Account Creation =====");
-	        System.out.print("Enter Bank Account Number: ");
-	        accountNo = scanner.nextLine();
-	        System.out.print("Set Password: ");
-	        password = scanner.nextLine();
-	        System.out.print("Enter Initial Balance: ");
-	        balance = scanner.nextDouble();
-	        scanner.nextLine(); 
-	        System.out.println("Account Created Successfully!");
-	    }
-	    public boolean login() {
-	        System.out.println("\n===== Login =====");
-	        System.out.print("Enter Bank Account Number: ");
-	        String inputAcc = scanner.nextLine();
-	        System.out.print("Enter Password: ");
-	        String inputPass = scanner.nextLine();
-	        if (inputAcc.equals(accountNo) && inputPass.equals(password)) {
-	            System.out.println("Login Successful!");
-	            return true;
-	        } else {
-	            System.out.println("Invalid Credentials.");
-	            return false;
-	        }
-	    }
-	    public void showMenu() {
-	        int choice;
-	        do {
-	            System.out.println("\n1. Deposit\n2. Withdraw\n3. Transfer\n4. Logout");
-	            System.out.print("Choose an option: ");
-	            choice = scanner.nextInt();
-	            switch (choice) {
-	                case 1 -> deposit();
-	                case 2 -> withdraw();
-	                case 3 -> transfer();
-	                case 4 -> System.out.println("Logged out.");
-	                default -> System.out.println("Invalid choice.");
-	            }
-	        } while (choice != 4);
-	    }
-	    public void deposit() {
-	        System.out.print("Enter amount to deposit: ");
-	        double amount = scanner.nextDouble();
-	        balance += amount;
-	        System.out.println("Deposit successful. New Balance: ₹" + balance);
-	    }
-	    public void withdraw() {
-	        System.out.print("Enter amount to withdraw: ");
-	        double amount = scanner.nextDouble();
-	        if (amount <= balance) {
-	            balance -= amount;
-	            System.out.println("Withdrawal successful. New Balance: ₹" + balance);
-	        } else {
-	            System.out.println("Insufficient balance.");
-	        }
-	    }
-	    public void transfer() {
-	        System.out.print("Enter amount to transfer: ");
-	        double amount = scanner.nextDouble();
-	        scanner.nextLine();
-
-	        if (amount <= balance) {
-	            int otp = generateOtp();
-	            System.out.println("Generated OTP: " + otp);
-	            System.out.print("Enter OTP: ");
-	            int enteredOtp = scanner.nextInt();
-
-	            if (enteredOtp == otp) {
-	                balance -= amount;
-	                System.out.println("Transfer successful. Remaining Balance: ₹" + balance);
-	            } else {
-	                System.out.println("Incorrect OTP. Transfer canceled.");
-	            }
-	        } else {
-	            System.out.println("Insufficient balance.");
-	        }
-	    }
-	    private int generateOtp() {
-	        return 1000 + random.nextInt(9000); 
-	    }
-	}
+import java.util.Scanner;
+import java.util.InputMismatchException;
+public class BankingApp {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        // Hardcoded accounts
+        BankAccount acc1 = new BankAccount("12345", "pass123", 10000);
+        BankAccount acc2 = new BankAccount("67890", "pass456", 5000);
+        System.out.print("Enter Account No: ");
+        String accNo = sc.next();
+        System.out.print("Enter Password: ");
+        String pwd = sc.next();
+        BankAccount currentUser = null;
+        // Check credentials
+        if (acc1.verifyCredentials(accNo, pwd)) {
+            currentUser = acc1;
+        } else if (acc2.verifyCredentials(accNo, pwd)) {
+            currentUser = acc2;
+        }
+        if (currentUser == null) {
+            System.out.println("Invalid credentials! Exiting...");
+            sc.close();
+            return;
+        }
+        System.out.println("Login successful! Current Balance: " + currentUser.getBalance());
+        int choice;
+        do {
+            System.out.println("\nChoose an option:");
+            System.out.println("1. Deposit");
+            System.out.println("2. Withdraw");
+            System.out.println("3. Transfer");
+            System.out.println("4. View Balance");
+            System.out.println("5. Logout");
+            System.out.print("Enter your choice: ");
+            try {
+                choice = sc.nextInt();
+                switch (choice) {
+                    case 1:
+                        System.out.print("Enter deposit amount: ");
+                        double depositAmt = sc.nextDouble();
+                        currentUser.deposit(depositAmt);
+                        break;
+                    case 2:
+                        System.out.print("Enter withdrawal amount: ");
+                        double withdrawAmt = sc.nextDouble();
+                        currentUser.withdraw(withdrawAmt);
+                        break;
+                    case 3:
+                        System.out.print("Enter receiver account number: ");
+                        String recvAccNo = sc.next();
+                        BankAccount receiver = null;
+                        if (recvAccNo.equals(acc1.getAccountNo())) {
+                            receiver = acc1;
+                        } else if (recvAccNo.equals(acc2.getAccountNo())) {
+                            receiver = acc2;
+                        }
+                        if (receiver == null) {
+                            System.out.println("Receiver account not found!");
+                            break;
+                        }
+                        if (receiver.getAccountNo().equals(currentUser.getAccountNo())) {
+                            System.out.println("Cannot transfer to yourself.");
+                            break;
+                        }
+                        System.out.print("Enter transfer amount: ");
+                        double transferAmt = sc.nextDouble();
+                        // Generate OTP
+                        int otp = 1000 + new Random().nextInt(9000);
+                        System.out.println("Generated OTP: " + otp);
+                        System.out.print("Enter OTP to confirm transfer: ");
+                        int userOtp = sc.nextInt();
+                        currentUser.transfer(receiver, transferAmt, otp, userOtp);
+                        break;
+                    case 4:
+                        System.out.println("Current Balance: " + currentUser.getBalance());
+                        break;
+                    case 5:
+                        System.out.println("Logout successful.");
+                        break;
+                    default:
+                        System.out.println("Invalid choice!");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a number.");
+                sc.nextLine();
+                choice = 0;
+            }
+        } while (choice != 5);
+        sc.close();
+    }
+}
